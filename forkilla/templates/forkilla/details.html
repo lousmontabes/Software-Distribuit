@@ -1,0 +1,84 @@
+{% extends 'forkilla/base.html' %}
+
+{% block navigation %}
+{% endblock %}
+
+{% block header %}
+<div class="header restaurant" id="header" style="background-image: url('{{restaurant.featured_photo.url}}')">
+  <div class="logo" id="header-logo">
+
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="trail">
+  <div class="content">
+    <a href="{% url 'index' %}">forkilla</a> >
+
+    <a href="{% url 'restaurants' %}{{restaurant.city}}">{{restaurant.city}}</a>
+    > <a href="{% url 'restaurants' %}{{restaurant.city}}/{{restaurant.category}}">{{restaurant.get_human_category}}</a>
+    > <b>{{restaurant.name}}</b>
+  </div>
+</div>
+
+<div class="text-body restaurant-details">
+  <div class="title">
+    {{restaurant.name}}
+  </div>
+  <div class="subtitle">
+    {{restaurant.address}}
+  </div>
+  <div class="details">
+    {{restaurant.city}}, {{restaurant.country}} · {{restaurant.get_human_category}}
+  </div>
+  <div class="description">
+    {{restaurant.menu_description}}
+  </div>
+  <div class="stats">
+    <div class="stat">
+      User ratings:<br /><span style="font-size: 32px">{{restaurant.rate}}</span> / 10
+    </div>
+    <div class="stat">
+      Average price:<br /><span style="font-size: 32px">{{restaurant.price_average}}</span> €
+    </div>
+  </div>
+
+</div>
+
+<form action="{% url 'reservation'%}" method="get">
+  <div class="text-body">
+    <button type="submit" class="button inverted" name="reservation" value={{restaurant.restaurant_number}}>
+      <i class="fas fa-utensils"></i> Place reservation
+    </button>
+  </div>
+</form>
+
+<h2>Our users' opinions:</h2>
+
+<div class="text-body reviews">
+
+  {% if reviews %}
+    {% for review in reviews %}
+      <div class="review" style="margin-bottom: 1em">
+      <b>{{review.user}} says:</b><br>
+      {{review.message}}<br>
+      <div style="opacity: 1; font-size: 14px; background: #c44569; padding: .1em .25em; color: white; margin: .5em 0; display: inline-block"><b>{{review.rating}}</b> / 5</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    There are no reviews yet. Have you been here? Tell us your opinion!
+  {% endif %}
+
+</div>
+
+<h2>Leave a review</h2>
+
+<form class="register-form" style="margin-left: 2em" method="post">
+  {% csrf_token %}
+  {{form.as_p}}
+  <button type="submit" class="button opaque">Publish review</button>
+</form>
+
+{% endblock %}

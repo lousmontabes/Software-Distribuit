@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Forkilla</title>
+  <meta name="description" content="Forkilla">
+  <meta name="author" content="Pedro Pizarro, Lluís Montabes">
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
+  <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Sree+Krushnadevaraya&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <div class="header empty">
+    <div class="logo" id="header-logo">
+
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="navigation" id="navigation">
+      <a href="{% url 'index' %}">
+        <div class="logo hidden" id="nav-logo">
+          Forkilla
+        </div>
+      </a>
+    </div>
+
+    <div class="area" style="margin-top: 1.5em">
+      <div class="content">
+        <div class="restaurant-details">
+          <div class="title" style="margin-top: -.5em">
+            There's nothing here!
+          </div>
+          <div class="description">
+            It looks like you reached a dead end.<br />
+            If you followed a link to this page, make sure you've typed it correctly.<br />
+            Otherwise, the content you're' trying to access may not exist anymore.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+  <script>
+
+  $(document).ready(function() {
+    $("#nav-logo").removeClass("hidden");
+  });
+
+  $(document).scroll(function(e){
+    if ($(document).scrollTop() > $(".header").outerHeight()) {
+
+      $("#nav-logo").addClass("fixed");
+      $("#nav-logo").css("top", 0);
+      $("#navigation").css("padding-top", $("#nav-logo").outerHeight());
+
+    } else {
+      $("#nav-logo").removeClass("fixed");
+      $("#nav-logo").css("top", 0);
+      $("#navigation").css("padding-top", 0);
+    }
+  });
+
+  </script>
+
+</body>
+</html>
