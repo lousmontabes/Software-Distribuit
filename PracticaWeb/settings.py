@@ -141,3 +141,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+try:
+    from forkilla.local_settings import *
+except ImportError:
+    # No local settings was found, skipping.
+    pass
