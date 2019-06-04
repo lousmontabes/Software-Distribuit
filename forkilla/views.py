@@ -10,6 +10,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+from .serializers import RestaurantSerializer
 
 def index(request):
     promoted_restaurants =  Restaurant.objects.filter()
@@ -280,3 +283,10 @@ def _check_session(request):
         viewedrestaurants = ViewedRestaurants.objects.get(id_vr=request.session["viewedrestaurants"])
 
     return viewedrestaurants
+
+class RestaurantViewSet(viewsets.ModelViewSet):
+            """
+            API endpoint that allows Restaurants to be viewed or edited.
+            """
+            queryset = Restaurant.objects.all().order_by('category')
+            serializer_class = RestaurantSerializer
