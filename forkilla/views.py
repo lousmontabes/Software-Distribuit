@@ -231,9 +231,7 @@ def _login(request, user):
 
 def logout(request):
     auth.logout(request)
-    return 1
-    # Redirect to a success page.
-    #return HttpResponse que toque =).
+    return HttpResponseRedirect(reverse('index'))
 
 def _check_session(request):
 

@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^reservation/$', views.reservation, name='reservation'),
     url(r'^checkout/$', views.checkout, name='checkout'),
     url(r'^register/$', views.register, name='register'),
-    url(r'^login/$', views.login, name='login')
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
 ]
