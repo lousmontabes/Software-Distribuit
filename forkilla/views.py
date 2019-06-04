@@ -173,6 +173,18 @@ def reservation(request):
 
     return render(request, 'forkilla/reservation.html', context)
 
+@login_required
+def reservations(request):
+
+    reservations = Reservation.objects.filter(user=request.user)
+    print(reservations)
+
+    context = {
+                'reservations': reservations
+            }
+    return HttpResponse("Ola")
+
+
 def checkout(request):
 
     viewedrestaurants = _check_session(request)
