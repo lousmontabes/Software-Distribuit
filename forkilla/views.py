@@ -137,7 +137,7 @@ def reservation(request):
                 resv_current_people = 0
                 for reservation in reservations:
                     resv_current_people += reservation.num_people
-                
+
                 if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
                     request.session["result"] = "FAIL"
                 else:
@@ -170,9 +170,13 @@ def reservation(request):
 def checkout(request):
 
     viewedrestaurants = _check_session(request)
+    reservation = Reservation.objects.get(id=request.session["reservation"])
+    time = Reservation._d_slots.get(reservation.time_slot)
 
     context = {
-        'reservation': request.session["reservation"],
+        'success': request.session["result"],
+        'reservation': reservation,
+        'time': time,
         'restaurant': restaurant,
         'viewedrestaurants': viewedrestaurants,
     }
