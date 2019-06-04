@@ -126,14 +126,14 @@ def reservation(request):
                 resv = form.save(commit=False)
                 restaurant_number = request.session["reserved_restaurant"]
                 resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
-                
+
                 reservations = Reservation.objects.filter(restaurant=resv.restaurant, time_slot = resv.time_slot)
                 resv_current_people = 0
                 for i in reservations:
                     resv_current_people += i.num_people
-                
+
                 #if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
-                    
+
 
                 resv.save()
                 request.session["reservation"] = resv.id
@@ -164,9 +164,13 @@ def reservation(request):
 def checkout(request):
 
     viewedrestaurants = _check_session(request)
+    reservation = Reservation.objects.get(id=request.session["reservation"])
+    time = Reservation._d_slots.get(reservation.time_slot)
 
     context = {
-        'reservation': request.session["reservation"],
+        'success': request.session["result"],
+        'reservation': reservation,
+        'time': time,
         'restaurant': restaurant,
         'viewedrestaurants': viewedrestaurants,
     }
