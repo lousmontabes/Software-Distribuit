@@ -132,10 +132,10 @@ def reservation(request):
             form = ReservationForm(request.POST)
             if form.is_valid():
                 resv = form.save(commit=False)
-                
+
                 #We set the user
                 resv.user = request.user
-                
+
                 #Set the restaurant
                 restaurant_number = request.session["reserved_restaurant"]
                 resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
@@ -148,6 +148,7 @@ def reservation(request):
 
                 if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
                     request.session["result"] = "FAIL"
+                    request.session["restaurant"] = restaurant_number
                 else:
                     resv.save()
                     request.session["reservation"] = resv.id
@@ -179,26 +180,31 @@ def reservation(request):
 @login_required
 def reservations(request):
 
+    viewedrestaurants = _check_session(request)
     reservations = Reservation.objects.filter(user=request.user)
-    print(reservations)
 
     context = {
-                'reservations': reservations
-            }
-    return HttpResponse("Ola")
+        'reservations': reservations,
+        'viewedrestaurants': viewedrestaurants
+    }
+
+    return render(request, 'forkilla/reservations.html', context)
 
 
 def checkout(request):
 
     viewedrestaurants = _check_session(request)
-    reservation = Reservation.objects.get(id=request.session["reservation"])
-    time = Reservation._d_slots.get(reservation.time_slot)
+
+    if request.session["result"] == "SUCCESS":
+        reservation = Reservation.objects.get(id=request.session["reservation"])
+        time = Reservation._d_slots.get(reservation.time_slot)
+    else:
+        return HttpResponseRedirect('/reservation?reservation=' + request.session["restaurant"])
 
     context = {
         'success': request.session["result"],
         'reservation': reservation,
         'time': time,
-        'restaurant': restaurant,
         'viewedrestaurants': viewedrestaurants,
     }
 

@@ -129,8 +129,6 @@ input, select
   position: relative
 
 .navigation-wrap
-  position: fixed
-  width: 100vw
   z-index: 200
   box-sizing: border-box
   background-image: url($header-image)
@@ -439,3 +437,38 @@ form
     box-shadow: $soft-shadow-highlighted-heavy
     i
       transform: scale(1.2)
+
+.reservation
+  background: white
+  display: inline-block
+  border-radius: 3px
+  border: 1px solid rgba($accent-color, .25)
+  border-bottom: 1px dashed rgba($accent-color, .5)
+  font-size: 22px
+  box-shadow: $soft-shadow
+  width: 15em
+  font-family: "Cutive Mono"
+  margin-top: 1em
+  margin-right: 1em
+  position: relative
+  transition: .4s
+  .photo
+    width: 100%
+    height: 8em
+    background-size: cover
+  .content
+    margin: 2em
+  .hole
+    position: absolute
+    width: .75em
+    height: .75em
+    border-radius: 50%
+    border: 1px solid rgba($accent-color, .25)
+    background: $background-color
+    box-shadow: inset $soft-shadow
+    top: 0
+    left: calc(50% - 1.375em)
+    margin: 1em
+  &:hover
+    transform: scale(1.02)
+    box-shadow: $soft-shadow-highlighted-heavy
