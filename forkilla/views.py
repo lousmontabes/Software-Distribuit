@@ -129,15 +129,15 @@ def reservation(request):
                 
                 reservations = Reservation.objects.filter(restaurant=resv.restaurant, time_slot = resv.time_slot)
                 resv_current_people = 0
-                for i in reservations:
-                    resv_current_people += i.num_people
+                for reservation in reservations:
+                    resv_current_people += reservation.num_people
                 
-                #if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
-                    
-
-                resv.save()
-                request.session["reservation"] = resv.id
-                request.session["result"] = "OK"
+                if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
+                    request.session["result"] = "FAIL"
+                else:
+                    resv.save()
+                    request.session["reservation"] = resv.id
+                    request.session["result"] = "SUCCESS"
 
             else:
                 request.session["result"] = form.errors
