@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from .models import Restaurant, ViewedRestaurants, RestaurantInsertDate, Review
+from .models import Restaurant, ViewedRestaurants, RestaurantInsertDate, Review, Reservation
 from .forms import ReservationForm, PickerForm, ReviewForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
@@ -78,14 +78,14 @@ def restaurant(request, restaurant_number=""):
     if request.method == "POST":
         form = ReviewForm(request.POST)
         if form.is_valid():
-                review = form.save(commit=False)
-                review.user = request.user
-                review.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
-                review.save()
-                request.session["review"] = review.id
-                request.session["result"] = "OK"
+            review = form.save(commit=False)
+            review.user = request.user
+            review.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
+            review.save()
+            request.session["review"] = review.id
+            request.session["result"] = "OK"
         else:
-              request.session["result"] = form.errors
+            request.session["result"] = form.errors
         return HttpResponseRedirect(reverse('restaurant', args=[restaurant_number]))
 
     elif request.method == "GET":
@@ -123,15 +123,18 @@ def reservation(request):
         if request.method == "POST":
             form = ReservationForm(request.POST)
             if form.is_valid():
-                    resv = form.save(commit=False)
-                    restaurant_number = request.session["reserved_restaurant"]
-                    resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
-                    resv.save()
-                    request.session["reservation"] = resv.id
-                    request.session["result"] = "OK"
+                resv = form.save(commit=False)
+                restaurant_number = request.session["reserved_restaurant"]
+                resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
+
+                reservations = Reservation.objects.filter(city__iexact=city, category__iexact=category)
+
+                resv.save()
+                request.session["reservation"] = resv.id
+                request.session["result"] = "OK"
 
             else:
-                  request.session["result"] = form.errors
+                request.session["result"] = form.errors
             return HttpResponseRedirect(reverse('checkout'))
 
         elif request.method == "GET":
