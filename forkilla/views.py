@@ -77,17 +77,20 @@ def restaurant(request, restaurant_number=""):
     viewedrestaurants = _check_session(request)
 
     if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.user = request.user
-            review.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
-            review.save()
-            request.session["review"] = review.id
-            request.session["result"] = "OK"
+        if request.user.is_authenticated:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.user = request.user
+                review.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
+                review.save()
+                request.session["review"] = review.id
+                request.session["result"] = "OK"
+            else:
+                request.session["result"] = form.errors
+            return HttpResponseRedirect(reverse('restaurant', args=[restaurant_number]))
         else:
-            request.session["result"] = form.errors
-        return HttpResponseRedirect(reverse('restaurant', args=[restaurant_number]))
+            return HttpResponseRedirect('/login?next=/restaurant/' + restaurant_number)
 
     elif request.method == "GET":
         try:
@@ -128,7 +131,7 @@ def reservation(request):
                 resv = form.save(commit=False)
                 
                 #We set the user
-                resv.user = request.username
+                resv.user = request.user
                 
                 #Set the restaurant
                 restaurant_number = request.session["reserved_restaurant"]
@@ -218,7 +221,10 @@ def login(request):
                 # Correct password, and the user is marked "active"
                 auth.login(request, user)
                 # Redirect to a success page.
-                return HttpResponseRedirect(reverse('index'))
+                if request.GET.get('next'):
+                    return HttpResponseRedirect(request.GET['next'])
+                else:
+                    return HttpResponseRedirect(reverse('index'))
             else:
                 # Show an error page
                 return 0
