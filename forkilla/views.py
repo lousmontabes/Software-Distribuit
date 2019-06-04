@@ -124,9 +124,15 @@ def reservation(request):
             form = ReservationForm(request.POST)
             if form.is_valid():
                 resv = form.save(commit=False)
+                
+                #We set the user
+                resv.user = request.username
+                
+                #Set the restaurant
                 restaurant_number = request.session["reserved_restaurant"]
                 resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
-                
+
+                #check if the restaurant has enough room
                 reservations = Reservation.objects.filter(restaurant=resv.restaurant, time_slot = resv.time_slot)
                 resv_current_people = 0
                 for reservation in reservations:
