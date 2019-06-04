@@ -4,11 +4,12 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from .models import Restaurant, ViewedRestaurants, RestaurantInsertDate, Review
+from .models import Restaurant, ViewedRestaurants, RestaurantInsertDate, Review, Reservation
 from .forms import ReservationForm, PickerForm, ReviewForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     promoted_restaurants =  Restaurant.objects.filter()
@@ -76,17 +77,20 @@ def restaurant(request, restaurant_number=""):
     viewedrestaurants = _check_session(request)
 
     if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
+        if request.user.is_authenticated:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
                 review = form.save(commit=False)
                 review.user = request.user
                 review.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
                 review.save()
                 request.session["review"] = review.id
                 request.session["result"] = "OK"
+            else:
+                request.session["result"] = form.errors
+            return HttpResponseRedirect(reverse('restaurant', args=[restaurant_number]))
         else:
-              request.session["result"] = form.errors
-        return HttpResponseRedirect(reverse('restaurant', args=[restaurant_number]))
+            return HttpResponseRedirect('/login?next=/restaurant/' + restaurant_number)
 
     elif request.method == "GET":
         try:
@@ -114,6 +118,7 @@ def restaurant(request, restaurant_number=""):
 
     return render(request, 'forkilla/details.html', context)
 
+@login_required
 def reservation(request):
 
     viewedrestaurants = _check_session(request)
@@ -123,18 +128,34 @@ def reservation(request):
         if request.method == "POST":
             form = ReservationForm(request.POST)
             if form.is_valid():
-                    resv = form.save(commit=False)
-                    restaurant_number = request.session["reserved_restaurant"]
-                    resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
+                resv = form.save(commit=False)
+                
+                #We set the user
+                resv.user = request.user
+                
+                #Set the restaurant
+                restaurant_number = request.session["reserved_restaurant"]
+                resv.restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
+
+                #check if the restaurant has enough room
+                reservations = Reservation.objects.filter(restaurant=resv.restaurant, time_slot = resv.time_slot)
+                resv_current_people = 0
+                for reservation in reservations:
+                    resv_current_people += reservation.num_people
+
+                if (resv.restaurant.capacity < (resv_current_people + resv.num_people)):
+                    request.session["result"] = "FAIL"
+                else:
                     resv.save()
                     request.session["reservation"] = resv.id
-                    request.session["result"] = "OK"
+                    request.session["result"] = "SUCCESS"
 
             else:
-                  request.session["result"] = form.errors
+                request.session["result"] = form.errors
             return HttpResponseRedirect(reverse('checkout'))
 
         elif request.method == "GET":
+
             restaurant_number = request.GET["reservation"]
             restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
             request.session["reserved_restaurant"] = restaurant_number
@@ -155,9 +176,13 @@ def reservation(request):
 def checkout(request):
 
     viewedrestaurants = _check_session(request)
+    reservation = Reservation.objects.get(id=request.session["reservation"])
+    time = Reservation._d_slots.get(reservation.time_slot)
 
     context = {
-        'reservation': request.session["reservation"],
+        'success': request.session["result"],
+        'reservation': reservation,
+        'time': time,
         'restaurant': restaurant,
         'viewedrestaurants': viewedrestaurants,
     }
@@ -196,7 +221,10 @@ def login(request):
                 # Correct password, and the user is marked "active"
                 auth.login(request, user)
                 # Redirect to a success page.
-                return HttpResponseRedirect(reverse('index'))
+                if request.GET.get('next'):
+                    return HttpResponseRedirect(request.GET['next'])
+                else:
+                    return HttpResponseRedirect(reverse('index'))
             else:
                 # Show an error page
                 return 0
@@ -228,9 +256,7 @@ def _login(request, user):
 
 def logout(request):
     auth.logout(request)
-    return 1
-    # Redirect to a success page.
-    #return HttpResponse que toque =).
+    return HttpResponseRedirect(reverse('index'))
 
 def _check_session(request):
 

@@ -65,6 +65,7 @@ class Reservation(models.Model):
     )
     _d_slots = dict(SLOTS)
     id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     day = models.DateField(default=datetime.now)
     time_slot = models.CharField(max_length=15, choices=SLOTS)
