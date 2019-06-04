@@ -9,6 +9,7 @@ from .forms import ReservationForm, PickerForm, ReviewForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     promoted_restaurants =  Restaurant.objects.filter()
@@ -114,6 +115,7 @@ def restaurant(request, restaurant_number=""):
 
     return render(request, 'forkilla/details.html', context)
 
+@login_required
 def reservation(request):
 
     viewedrestaurants = _check_session(request)
@@ -150,6 +152,7 @@ def reservation(request):
             return HttpResponseRedirect(reverse('checkout'))
 
         elif request.method == "GET":
+
             restaurant_number = request.GET["reservation"]
             restaurant = Restaurant.objects.get(restaurant_number=restaurant_number)
             request.session["reserved_restaurant"] = restaurant_number
