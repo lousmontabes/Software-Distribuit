@@ -13,6 +13,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from .serializers import RestaurantSerializer,UsersSerializer
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 def index(request):
     promoted_restaurants =  Restaurant.objects.filter()
@@ -291,10 +294,16 @@ def _check_session(request):
     return viewedrestaurants
 
 class RestaurantViewSet(viewsets.ModelViewSet):
-            queryset = Restaurant.objects.all().order_by('category')
-            serializer_class = RestaurantSerializer
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    queryset = Restaurant.objects.all().order_by('category')
+    serializer_class = RestaurantSerializer
 
 class UsersViewSet(viewsets.ModelViewSet):
-            queryset = User.objects.all()
-            serializer_class = UsersSerializer
+    
+    permission_classes = (permissions.IsAuthenticated,)
+
+    queryset = User.objects.all()
+    serializer_class = UsersSerializer
 

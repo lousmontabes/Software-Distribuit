@@ -6,6 +6,7 @@ from datetime import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
+
 class Restaurant(models.Model):
 
     CATEGORIES = (

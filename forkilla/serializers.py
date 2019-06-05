@@ -1,5 +1,6 @@
-from .models import Restaurant, User
+from .models import Restaurant
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
 class RestaurantSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -19,3 +20,4 @@ class UsersSerializer(serializers.HyperlinkedModelSerializer):
         'is_staff', 'is_active', 'is_superuser', 'last_login', 
         'date_joined'
         )
+
