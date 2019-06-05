@@ -12,7 +12,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from .serializers import RestaurantSerializer,UsersSerializer
+from .serializers import RestaurantSerializer,UsersSerializer, UserSerializer, PasswordSerializer
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -293,6 +293,26 @@ def _check_session(request):
 
     return viewedrestaurants
 
+'''
+
+Permissions
+
+'''
+
+class ComercialPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        ip_addr = request.META['REMOTE_ADDR']
+        user = User.objects.filter(ip_addr=ip_addr)
+        
+        return not blacklisted
+
+'''
+
+API
+
+'''
+
 class RestaurantViewSet(viewsets.ModelViewSet):
 
     permission_classes = (permissions.IsAuthenticated,)
@@ -300,10 +320,27 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all().order_by('category')
     serializer_class = RestaurantSerializer
 
+
 class UsersViewSet(viewsets.ModelViewSet):
     
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (,)
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
 
+class UserViewSet(viewsets.ModelViewSet):
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @action(detail=True, methods=['post'])
+    def set_password(self, request, pk=None):
+        user = self.get_object()
+        serializer = PasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user.set_password(serializer.data['password'])
+            user.save()
+            return Response({'status': 'password set'})
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
