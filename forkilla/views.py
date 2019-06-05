@@ -315,7 +315,7 @@ API
 
 class RestaurantViewSet(viewsets.ModelViewSet):
 
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.DjangoModelPermissions,)
 
     queryset = Restaurant.objects.all().order_by('category')
     serializer_class = RestaurantSerializer
@@ -323,7 +323,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 
 class UsersViewSet(viewsets.ModelViewSet):
     
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.DjangoModelPermissions,)
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
