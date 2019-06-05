@@ -12,7 +12,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from .serializers import RestaurantSerializer,UsersSerializer, UserSerializer, PasswordSerializer
+from .serializers import RestaurantSerializer,UsersSerializer
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -323,24 +323,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 
 class UsersViewSet(viewsets.ModelViewSet):
     
-    permission_classes = (,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-
-class UserViewSet(viewsets.ModelViewSet):
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-    @action(detail=True, methods=['post'])
-    def set_password(self, request, pk=None):
-        user = self.get_object()
-        serializer = PasswordSerializer(data=request.data)
-        if serializer.is_valid():
-            user.set_password(serializer.data['password'])
-            user.save()
-            return Response({'status': 'password set'})
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
