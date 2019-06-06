@@ -320,12 +320,16 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 
         query_city = self.request.GET.get('city')
         query_category = self.request.GET.get('category')
+        query_price = self.request.GET.get('price_average')
 
         if query_city:
             queryset = Restaurant.objects.filter(city__iexact=query_city)
 
         if query_category:
             queryset = queryset.filter(category__iexact=query_category)
+
+        if query_price:
+            queryset = queryset.filter(price_average__lt=query_price)
 
         return queryset
 
