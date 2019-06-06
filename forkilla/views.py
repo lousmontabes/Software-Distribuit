@@ -261,10 +261,9 @@ def login(request):
 
     return render(request, 'forkilla/login.html', context)
 
-def comparator(request):
+def comparator(request, ips):
 
     viewedrestaurants = _check_session(request)
-    urls = "['localhost']"
 
     if request.method == "POST":
         form = ComparatorForm(request.POST)
@@ -278,7 +277,7 @@ def comparator(request):
     context = {
         'form': form,
         'data': data,
-        'urls': urls,
+        'urls': ips,
         'viewedrestaurants': viewedrestaurants
     }
 

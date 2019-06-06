@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from . import views
 
+listOfAddresses = ['localhost:8000', 'sd2019-forkillaa1.herokuapp.com', 'sd2019-forkillaa7.herokuapp.com']
+
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^restaurants/$', views.restaurants, name='restaurants'),
@@ -12,5 +14,5 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^reservations/$', views.reservations, name='reservations'),
-    url(r'^comparator/$', views.comparator, name='comparator'),
+    url(r'^comparator/$', views.comparator, {'ips': listOfAddresses}, name='comparator'),
 ]

@@ -61,23 +61,22 @@
     urls = {{urls|safe}};
 
     urls.forEach(function(url) {
-      fetch('/api/restaurants/{{data}}&format=json')
-      .then(function(response) {
-        response.json().then(data => {
-          restaurants = data.results;
 
-          restaurants.forEach(function(r){
-            console.log(r);
-            $("#card-dummy #restaurant-link").attr("href", "/forkilla/restaurant/" + r.restaurant_number);
-            $("#card-dummy #restaurant-image").css("background-image", "url('" + r.featured_photo + "')");
-            $("#card-dummy #restaurant-title").html(r.name);
-            $("#card-dummy #restaurant-subtitle").html(r.city + ", " + r.category);
-            $("#card-dummy #restaurant-description").html(r.menu_description);
-            $("#card-dummy #restaurant-rating").html(r.rate);
-            $("#card-dummy #restaurant-price").html(r.price_average);
-            $("#results").append($("#card-dummy").html());
-          });
+      $.get('http://' + url + '/api/restaurants/{{data}}&format=json', function(response) {
 
+        $("#results").append("<h2>" + url + "</h2>");
+        restaurants = response.results;
+
+        restaurants.forEach(function(r){
+          console.log(r);
+          $("#card-dummy #restaurant-link").attr("href", "/forkilla/restaurant/" + r.restaurant_number);
+          $("#card-dummy #restaurant-image").css("background-image", "url('" + r.featured_photo + "')");
+          $("#card-dummy #restaurant-title").html(r.name);
+          $("#card-dummy #restaurant-subtitle").html(r.city + ", " + r.category);
+          $("#card-dummy #restaurant-description").html(r.menu_description);
+          $("#card-dummy #restaurant-rating").html(r.rate);
+          $("#card-dummy #restaurant-price").html(r.price_average);
+          $("#results").append($("#card-dummy").html());
         });
       });
     });

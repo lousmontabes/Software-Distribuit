@@ -96,7 +96,28 @@ class Pick(models.Model):
 
    _d_cities = dict(CITIES)
 
-   CATEGORIES = Restaurant.CATEGORIES
+   CATEGORIES = (
+      (" ", "Anything"),
+      ("Rice", "Rice"),
+      ("Fusi", "Fusion"),
+      ("BBQ", "Barbecue"),
+      ("Chin", "Chinese"),
+      ("Medi","Mediterranean"),
+      ("Crep","Creperie"),
+      ("Hind","Hindu"),
+      ("Japa","Japanese"),
+      ("Ital","Italian"),
+      ("Mexi","Mexican"),
+      ("Peru", "Peruvian"),
+      ("Russ","Russian"),
+      ("Turk","Turkish"),
+      ("Basq","Basque"),
+      ("Vegy", "Vegetarian"),
+      ("Afri","African"),
+      ("Egyp","Egyptian"),
+      ("Grek","Greek")
+   )
+
    category = models.CharField(max_length=5, choices=CATEGORIES)
    city = models.CharField(max_length=10, choices=CITIES)
 
