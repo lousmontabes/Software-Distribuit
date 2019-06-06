@@ -261,6 +261,16 @@ def login(request):
 
     return render(request, 'forkilla/login.html', context)
 
+def comparator(request):
+
+    viewedrestaurants = _check_session(request)
+
+    context = {
+        'viewedrestaurants': viewedrestaurants
+    }
+
+    return render(request, 'forkilla/comparator.html', context)
+
 def _login(request, user):
 
     username = request.POST.get('username', '')
@@ -294,35 +304,33 @@ def _check_session(request):
     return viewedrestaurants
 
 '''
-
-Permissions
-
-'''
-
-class ComercialPermission(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        ip_addr = request.META['REMOTE_ADDR']
-        user = User.objects.filter(ip_addr=ip_addr)
-        
-        return not blacklisted
-
-'''
-
 API
-
 '''
 
 class RestaurantViewSet(viewsets.ModelViewSet):
 
     permission_classes = (permissions.DjangoModelPermissions,)
-
-    queryset = Restaurant.objects.all().order_by('category')
     serializer_class = RestaurantSerializer
+
+    def get_queryset(self):
+
+        queryset = Restaurant.objects.all()
+
+        query_city = self.request.GET.get('city')
+        query_category = self.request.GET.get('category')
+
+        if query_city:
+            queryset = Restaurant.objects.filter(city__iexact=query_city)
+            print (queryset)
+
+        if query_category:
+            queryset = queryset.filter(category__iexact=query_category)
+
+        return queryset
 
 
 class UsersViewSet(viewsets.ModelViewSet):
-    
+
     permission_classes = (permissions.DjangoModelPermissions,)
 
     queryset = User.objects.all()

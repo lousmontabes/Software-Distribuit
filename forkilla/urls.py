@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^reservations/$', views.reservations, name='reservations'),
+    url(r'^comparator/$', views.comparator, name='comparator'),
 ]
