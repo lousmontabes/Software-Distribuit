@@ -21,7 +21,7 @@ from rest_framework import routers
 from forkilla import views
 
 router = routers.DefaultRouter()
-router.register(r'restaurants', views.RestaurantViewSet, basename="Restaurant")
+router.register(r'restaurants', views.RestaurantViewSet)
 router.register(r'users', views.UsersViewSet)
 
 urlpatterns = [

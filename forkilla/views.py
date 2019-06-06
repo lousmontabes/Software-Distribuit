@@ -312,6 +312,8 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.DjangoModelPermissions,)
     serializer_class = RestaurantSerializer
 
+    queryset = Restaurant.objects.all()
+
     def get_queryset(self):
 
         queryset = Restaurant.objects.all()
@@ -321,7 +323,6 @@ class RestaurantViewSet(viewsets.ModelViewSet):
 
         if query_city:
             queryset = Restaurant.objects.filter(city__iexact=query_city)
-            print (queryset)
 
         if query_category:
             queryset = queryset.filter(category__iexact=query_category)
