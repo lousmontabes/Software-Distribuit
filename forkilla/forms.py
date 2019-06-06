@@ -1,5 +1,5 @@
 from django import forms
-from .models import Reservation, Pick, Review
+from .models import Reservation, Pick, Review, ComparatorData
 
 class PickerForm(forms.ModelForm):
 
@@ -27,3 +27,13 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
         fields = ["message", "rating"]
+
+class ComparatorForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ComparatorForm, self).__init__(*args, **kwargs)
+        self.fields['price_average'].label = "Maximum price"
+
+    class Meta:
+        model = ComparatorData
+        fields = ["city", "category", "price_average"]

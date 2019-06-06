@@ -100,6 +100,12 @@ class Pick(models.Model):
    category = models.CharField(max_length=5, choices=CATEGORIES)
    city = models.CharField(max_length=10, choices=CITIES)
 
+class ComparatorData(models.Model):
+
+   category = models.CharField(max_length=50)
+   city = models.CharField(max_length=50)
+   price_average = models.DecimalField(max_digits=5, decimal_places=2)
+
 class ViewedRestaurants(models.Model):
    id_vr = models.AutoField(primary_key=True)
    restaurant = models.ManyToManyField(Restaurant, through='RestaurantInsertDate')

@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import Restaurant, ViewedRestaurants, RestaurantInsertDate, Review, Reservation
-from .forms import ReservationForm, PickerForm, ReviewForm
+from .forms import ReservationForm, PickerForm, ReviewForm, ComparatorForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import auth
@@ -264,8 +264,21 @@ def login(request):
 def comparator(request):
 
     viewedrestaurants = _check_session(request)
+    urls = "['localhost']"
+
+    if request.method == "POST":
+        form = ComparatorForm(request.POST)
+        if form.is_valid():
+            data = "?city=" + form.cleaned_data.get('city') + "&category=" + form.cleaned_data.get('category') + "&price_average=" + str(form.cleaned_data.get('price_average'))
+
+    else:
+        form = ComparatorForm()
+        data = None
 
     context = {
+        'form': form,
+        'data': data,
+        'urls': urls,
         'viewedrestaurants': viewedrestaurants
     }
 
@@ -329,7 +342,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category__iexact=query_category)
 
         if query_price:
-            queryset = queryset.filter(price_average__lt=query_price)
+            queryset = queryset.filter(price_average__lte=query_price)
 
         return queryset
 
