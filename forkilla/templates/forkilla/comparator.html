@@ -1,0 +1,86 @@
+{% extends 'forkilla/base.html' %}
+
+{% block content %}
+
+<div class="trail">
+  <div class="content">
+    <a href="{% url 'index' %}">forkilla</a> > <b>Comparator</b>
+  </div>
+</div>
+
+<div class="text-body">
+
+  <h2 style="margin: 0">Comparator</h2>
+
+  <form class="comparator-form" id="comparator-form" method="POST">
+      {% csrf_token %}
+      {{ form.as_table }}
+      <button type="submit" class="button inverted light-shadow"><i class="fas fa-check"></i> Confirm</button>
+  </form>
+
+</div>
+
+{% if data %}
+<div id="results">
+
+</div>
+{% endif %}
+
+<div style="display: none" id="card-dummy">
+  <div class="card">
+    <a id="restaurant-link" href="">
+      <div id="restaurant-image" class="restaurant-image">
+        <button type="submit" class="button opaque" id="reservation-button" name="reservation" value="">
+          <i class="fas fa-utensils"></i> Place reservation
+        </button>
+      </div>
+      <div class="content">
+        <div class="title" id="restaurant-title">
+          {{restaurant.name}}
+        </div>
+        <div class="subtitle" id="restaurant-subtitle">
+          {{restaurant.city}}, {{restaurant.get_human_category}}
+        </div>
+        <div class="description" id="restaurant-description">
+          {{restaurant.menu_description}}
+        </div>
+        <div class="price">
+          User ratings:<br /><span style="font-size: 24px" id="restaurant-rating">{{restaurant.rate}}</span> / 10<br /><br />Average price:<br /><span style="font-size:24px" id="restaurant-price">{{restaurant.price_average}}</span> €
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% if data %}
+  {% block extra_js %}
+  <script type="text/javascript">
+
+    urls = {{urls|safe}};
+
+    urls.forEach(function(url) {
+
+      $.get('http://' + url + '/api/restaurants/{{data}}&format=json', function(response) {
+
+        $("#results").append("<h2>" + url + "</h2>");
+        restaurants = response.results;
+
+        restaurants.forEach(function(r){
+          console.log(r);
+          $("#card-dummy #restaurant-link").attr("href", "/forkilla/restaurant/" + r.restaurant_number);
+          $("#card-dummy #restaurant-image").css("background-image", "url('" + r.featured_photo + "')");
+          $("#card-dummy #restaurant-title").html(r.name);
+          $("#card-dummy #restaurant-subtitle").html(r.city + ", " + r.category);
+          $("#card-dummy #restaurant-description").html(r.menu_description);
+          $("#card-dummy #restaurant-rating").html(r.rate);
+          $("#card-dummy #restaurant-price").html(r.price_average);
+          $("#results").append($("#card-dummy").html());
+        });
+      });
+    });
+
+  </script>
+  {% endblock %}
+{% endif %}

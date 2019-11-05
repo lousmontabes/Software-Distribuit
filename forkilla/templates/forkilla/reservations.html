@@ -1,0 +1,28 @@
+{% extends 'forkilla/base.html' %}
+
+{% block content %}
+
+<div class="trail">
+  <div class="content">
+    <a href="{% url 'index' %}">forkilla</a> > <b>Your reservations</b>
+  </div>
+</div>
+
+<div class="text-body">
+
+    <h2 style="margin: 0">Your reservations</h2><br>
+
+    {% for reservation in reservations %}
+    <div class="reservation" style="margin-top: 2em">
+      <div class="hole"></div>
+      <div class="photo" style="background-image: url('{{reservation.restaurant.featured_photo.url}}')"></div>
+      <div class="content">
+        <b>{{reservation.restaurant.name}}</b><br />
+        <b>{{reservation.time_slot}}</b><br /><br />
+        {{reservation.num_people}} person{% if reservation.num_people > 1 %}s{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock content %}

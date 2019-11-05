@@ -1,0 +1,148 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Forkilla</title>
+  <meta name="description" content="Forkilla">
+  <meta name="author" content="Pedro Pizarro, Lluís Montabes">
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
+  <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Sree+Krushnadevaraya&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
+  {% block navigation %}
+  <div class="navigation-wrap" id="navigation">
+    <div class="content">
+      <a href="{% url 'index' %}">
+      <div class="logo">
+        Forkilla
+      </div>
+      </a>
+    </div>
+  </div>
+  {% endblock %}
+
+  {% block header %}
+  {% endblock %}
+
+  <div class="page">
+
+    <div class="area">
+      <div class="content">
+
+        {% block content %}
+        {% endblock %}
+
+        {% block last-viewed %}
+        <div class="last-viewed">
+          <div class="shade"></div>
+
+          <h3>Recently viewed restaurants</h3>
+
+          {% if viewedrestaurants.restaurantinsertdate_set.all %}
+            {% for r in viewedrestaurants.restaurantinsertdate_set.all|slice:"5" %}
+
+              <div class="card small">
+                <a href="{% url 'restaurant' r.restaurant.restaurant_number%}">
+                  <div class="restaurant-image" style="background-image: url('{{r.restaurant.featured_photo.url}}')"></div>
+                  <div class="content">
+                    <div class="title">
+                      {{r.restaurant.name}}
+                    </div>
+                    <div class="subtitle">
+                      {{r.restaurant.city}}, {{r.restaurant.get_human_category}}
+                    </div>
+                  </div>
+                </a>
+              </div>
+
+          {% endfor %}
+        {% else %}
+
+          <div style="margin: 1.5em; opacity: .75">
+            You have no recently viewed restaurants.<br />Once you check out a restaurant, it will appear here.
+          </div>
+
+        {% endif %}
+
+        </div>
+        {% endblock %}
+
+      </div>
+    </div>
+  </div>
+
+  {% block user %}
+  <div class="floating" id="user">
+    {% if user.is_authenticated %}
+      <div class="top">
+        Welcome, <b>{{user}}</b>!
+      </div>
+      <div class="bottom">
+        <a href="{% url 'comparator' %}">Comparator</a>
+      </div>
+      <div class="bottom">
+        <a href="{% url 'reservations' %}">Your reservations</a>
+      </div>
+      <div class="bottom">
+        <a href="{% url 'logout' %}">Log out</a>
+      </div>
+    {% else %}
+      <div class="top">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="bottom">
+        <a href="{% url 'register' %}">Register</a> or <a href="{% url 'login' %}">log in</a>
+      </div>
+    {% endif %}
+  </div>
+  {% endblock %}
+
+  <script>
+
+  $(document).scroll(function(e){
+
+    $("#header-content").css("transform", "translateY(" + (-$(document).scrollTop() / 15) + "px)");
+
+    if ($(document).scrollTop() > $("#header-logo").offset().top + $("#header-logo").outerHeight()) {
+
+      $("#nav-logo").removeClass("hidden");
+
+      if ($(document).scrollTop() > $(".header").outerHeight()) {
+        $("#navigation").removeClass("hidden");
+      } else {
+        $("#navigation").addClass("hidden");
+      }
+
+    } else {
+      //$("#nav-logo").addClass("hidden");
+      //$("#navigation").css("padding-top", 0);
+    }
+  });
+
+  function scrollToTop() {
+    $("html, body").animate({ scrollTop: 0 }, 200);
+  }
+
+  </script>
+
+  {% block extra_js %}
+  {% endblock %}
+
+</body>
+</html>
